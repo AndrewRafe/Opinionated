@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Opinionated</string>
+
+    <!--Title Page Strings-->
+    <string name="title_welcome_message">Welcome to Opinionated, an app to modernise our democracy</string>
+    <string name="title_option_explanation">Select one of the options below to get started.</string>
+    <string name="title_login_button">Log In</string>
+    <string name="title_admin_button">ADMIN</string>
 </resources>
