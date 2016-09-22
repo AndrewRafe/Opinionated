@@ -1,9 +1,11 @@
-package com.coderafe.opinionated;
+package com.coderafe.opinionated.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import com.coderafe.opinionated.R;
+
+public class TitleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

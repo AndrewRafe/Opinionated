@@ -1,4 +1,4 @@
-package com.coderafe.opinionated;
+package com.coderafe.opinionated.model;
 
 import java.util.ArrayList;
 
@@ -8,17 +8,28 @@ import java.util.ArrayList;
  */
 public class Question {
 
+    private int mId;
     private String mQuestion;
     private ArrayList<String> mOptions;
 
     /**
      * Constructor method for the Question class that will set the question and all of the options
+     * @param questionId An associated id from a database
      * @param question A question as a String
      * @param options Array list of all possible options to answer the question
      */
-    public Question(String question, ArrayList<String> options) {
+    public Question(int questionId, String question, ArrayList<String> options) {
+        mId = questionId;
         mQuestion = question;
         mOptions = options;
+    }
+
+    /**
+     * Getter method to return the id number of the question
+     * @return questionID
+     */
+    public int getId() {
+        return mId;
     }
 
     /**
