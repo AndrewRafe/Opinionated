@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_create_user"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.coderafe.opinionated.activities.CreateUserActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/create_user_title_tv"
+        android:text="@string/create_user_title"
+        android:textSize="@dimen/title_text_size"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/title_title_margin"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/create_user_title_tv"
+        android:id="@+id/create_user_email_et"
+        android:inputType="textEmailAddress"
+        android:hint="@string/create_user_email_hint"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/create_user_email_et"
+        android:id="@+id/create_user_password_et"
+        android:inputType="textPassword"
+        android:hint="@string/create_user_password_hint" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/create_user_password_et"
+        android:id="@+id/create_user_year_of_birth_et"
+        android:inputType="number"
+        android:hint="@string/create_user_year_of_birth_hint" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/create_user_year_of_birth_et"
+        android:id="@+id/create_user_postcode_et"
+        android:inputType="number"
+        android:hint="@string/create_user_postcode" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/create_user_postcode_et"
+        android:id="@+id/create_user_gender_et"
+        android:hint="@string/create_user_gender" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/create_user_gender_et"
+        android:layout_centerHorizontal="true"
+        android:text="@string/create_user_submit_button" />
+
+</RelativeLayout>

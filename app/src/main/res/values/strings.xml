@@ -6,4 +6,14 @@
     <string name="title_option_explanation">Select one of the options below to get started.</string>
     <string name="title_login_button">Log In</string>
     <string name="title_admin_button">ADMIN</string>
+
+
+    <!-- Create User Activity Strings -->
+    <string name="create_user_title">Create User</string>
+    <string name="create_user_email_hint">Email</string>
+    <string name="create_user_password_hint">Password</string>
+    <string name="create_user_year_of_birth_hint">Year of Birth</string>
+    <string name="create_user_postcode">Postcode</string>
+    <string name="create_user_gender">Gender</string>
+    <string name="create_user_submit_button">SUBMIT</string>
 </resources>
