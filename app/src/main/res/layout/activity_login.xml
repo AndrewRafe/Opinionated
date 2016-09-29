@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/log_in_email_et"
         android:id="@+id/log_in_password_et"
+        android:inputType="textPassword"
         android:layout_marginTop="@dimen/default_message_margin"
         android:hint="@string/log_in_password_hint" />
 
@@ -42,6 +43,7 @@
         android:id="@+id/log_in_submit_btn"
         android:layout_marginTop="@dimen/default_message_margin"
         android:layout_centerHorizontal="true"
+        android:onClick="authenticateUser"
         android:text="@string/log_in_submit_button"/>
 
 </RelativeLayout>

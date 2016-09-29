@@ -63,6 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/create_user_gender_et"
         android:layout_centerHorizontal="true"
+        android:onClick="sendUserInformation"
         android:text="@string/create_user_submit_button" />
 
 </RelativeLayout>

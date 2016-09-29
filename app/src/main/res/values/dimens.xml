@@ -12,5 +12,6 @@
     <!--Title Page Dimensions -->
     <dimen name="title_title_margin">34dp</dimen>
     <dimen name="title_welcome_message_margin">34dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 
 </resources>

@@ -23,4 +23,16 @@
     <string name="log_in_email_hint">Email</string>
     <string name="log_in_password_hint">Password</string>
     <string name="log_in_submit_button">SUBMIT</string>
+    <!-- Alert Strings -->
+    <string name="log_in_alert_title">Incorrect Login</string>
+    <string name="log_in_alert_message">The login information provided is incorrect.
+        Please try again.</string>
+    <string name="log_in_alert_button_text">OK</string>
+    <string name="title_activity_home">HomeActivity</string>
+
+    <!-- Create User Activity Strings -->
+    <string name="create_user_alert_title">Sign Up Error</string>
+    <string name="create_user_alert_message">The information entered is incorrect.
+        Make sure that your email and password are entered correctly.</string>
+    <string name="create_user_alert_button_text">OK</string>
 </resources>

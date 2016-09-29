@@ -20,7 +20,11 @@
         </activity>
         <activity android:name=".activities.AnswerQuestionActivity" />
         <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.CreateUserActivity"></activity>
+        <activity android:name=".activities.CreateUserActivity" />
+        <activity
+            android:name=".activities.HomeActivity"
+            android:label="@string/title_activity_home"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
