@@ -6,6 +6,7 @@
     <string name="title_option_explanation">Select one of the options below to get started.</string>
     <string name="title_login_button">Log In</string>
     <string name="title_admin_button">ADMIN</string>
+    <string name="title_create_user_button">Create User</string>
 
 
     <!-- Create User Activity Strings -->
@@ -16,4 +17,10 @@
     <string name="create_user_postcode">Postcode</string>
     <string name="create_user_gender">Gender</string>
     <string name="create_user_submit_button">SUBMIT</string>
+
+    <!-- Log in Activity Strings -->
+    <string name="log_in_title">Log In</string>
+    <string name="log_in_email_hint">Email</string>
+    <string name="log_in_password_hint">Password</string>
+    <string name="log_in_submit_button">SUBMIT</string>
 </resources>

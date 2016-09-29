@@ -44,6 +44,7 @@
         android:layout_below="@id/title_option_explanation_tv"
         android:id="@+id/title_login_btn"
         android:text="@string/title_login_button"
+        android:onClick="logIn"
         android:layout_marginTop="@dimen/default_message_margin"
         android:layout_centerHorizontal="true"/>
 
@@ -51,8 +52,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/title_login_btn"
-        android:id="@+id/title_admin_btn"
-        android:text="@string/title_admin_button"
+        android:id="@+id/title_create_user_btn"
+        android:text="@string/title_create_user_button"
+        android:onClick="createUser"
         android:layout_marginTop="@dimen/default_message_margin"
         android:layout_centerHorizontal="true"/>
 
