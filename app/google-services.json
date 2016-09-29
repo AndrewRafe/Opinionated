@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1003555556206",
+    "firebase_url": "https://opinionated-bc4fb.firebaseio.com",
+    "project_id": "opinionated-bc4fb",
+    "storage_bucket": "opinionated-bc4fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003555556206:android:8a6de1a7ef6cfba1",
+        "android_client_info": {
+          "package_name": "com.coderafe.opinionated"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003555556206-h0tnf0hkqs6ee71afhfb0j37hskqvu3a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaA2EDg5kljybXVAYBkVeE7dgnv95GUtQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
