@@ -35,4 +35,10 @@
     <string name="create_user_alert_message">The information entered is incorrect.
         Make sure that your email and password are entered correctly.</string>
     <string name="create_user_alert_button_text">OK</string>
+
+    <!-- Home Activity Strings -->
+    <string name="home_welcome_message">Welcome, You are signed in as </string>
+    <string name="home_questions_answered_message_part1">You have answered </string>
+    <string name="home_questions_answered_message_part2"> questions</string>
+    <string name="home_answer_questions_button_text">Answer More Questions</string>
 </resources>

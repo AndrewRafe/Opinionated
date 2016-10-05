@@ -7,6 +7,8 @@
     android:fitsSystemWindows="true"
     tools:context="com.coderafe.opinionated.activities.HomeActivity">
 
+
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,6 +24,44 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_home" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/title_title_margin"
+        android:id="@+id/home_main_layout">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/home_welcome_tv"
+            android:textSize="@dimen/important_message_text_size"
+            android:layout_marginTop="@dimen/title_title_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/home_questions_answered_tv"
+            android:layout_below="@id/home_welcome_tv"
+            android:layout_marginTop="@dimen/default_message_margin"
+            android:textSize="@dimen/normal_message_text_size"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/default_message_margin"
+            android:text="@string/home_answer_questions_button_text"
+            android:layout_below="@id/home_questions_answered_tv"
+            android:id="@+id/home_answer_questions_btn"/>
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/home_load_data_progress_bar"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

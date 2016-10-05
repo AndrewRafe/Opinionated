@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.VectorEnabledTintResources;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.coderafe.opinionated.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +36,8 @@ public class CreateUserActivity extends AppCompatActivity {
     private EditText mUserYearOfBirth;
     private EditText mPostcode;
     private EditText mGender;
+    private Button mSubmitButton;
+    private ProgressBar mProgressBar;
 
     private FirebaseAuth mFirebaseAuth;
     private DatabaseReference mDatabase;
@@ -48,6 +52,8 @@ public class CreateUserActivity extends AppCompatActivity {
         mUserYearOfBirth = (EditText) findViewById(R.id.create_user_year_of_birth_et);
         mPostcode = (EditText) findViewById(R.id.create_user_postcode_et);
         mGender = (EditText) findViewById(R.id.create_user_gender_et);
+        mSubmitButton = (Button) findViewById(R.id.create_user_submit_btn);
+        mProgressBar = (ProgressBar) findViewById(R.id.create_user_progress_bar);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -72,8 +78,12 @@ public class CreateUserActivity extends AppCompatActivity {
                     getString(R.string.create_user_alert_message),
                     getString(R.string.create_user_alert_button_text));
         } else {
+            //Make the progress bar visible
+            mSubmitButton.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.VISIBLE);
             mFirebaseAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(CreateUserActivity.this, new OnCompleteListener<AuthResult>() {
+                    .addOnCompleteListener(CreateUserActivity.this,
+                            new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
@@ -97,6 +107,8 @@ public class CreateUserActivity extends AppCompatActivity {
                         showAlert(getString(R.string.create_user_alert_title),
                                 task.getException().getMessage(),
                                 getString(R.string.log_in_alert_button_text));
+                        mSubmitButton.setVisibility(View.VISIBLE);
+                        mProgressBar.setVisibility(View.GONE);
                     }
                 }
             });

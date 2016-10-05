@@ -64,6 +64,15 @@
         android:layout_below="@id/create_user_gender_et"
         android:layout_centerHorizontal="true"
         android:onClick="sendUserInformation"
+        android:id="@+id/create_user_submit_btn"
         android:text="@string/create_user_submit_button" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/create_user_progress_bar"
+        android:layout_below="@+id/create_user_gender_et"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

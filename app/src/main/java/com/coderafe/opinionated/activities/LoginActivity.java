@@ -6,7 +6,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.coderafe.opinionated.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -14,12 +16,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import static android.view.View.GONE;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
+    private Button mSubmitButton;
+    private ProgressBar mProgressBar;
 
-    private FirebaseAuth mFireBaseAuth;
+    private FirebaseAuth mFirebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +33,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         //Initialize the firebase auth
-        mFireBaseAuth = FirebaseAuth.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
         mEmailEditText = (EditText) findViewById(R.id.log_in_email_et);
         mPasswordEditText = (EditText) findViewById(R.id.log_in_password_et);
+        mSubmitButton = (Button) findViewById(R.id.log_in_submit_btn);
+        mProgressBar = (ProgressBar) findViewById(R.id.log_in_progress_bar);
     }
 
     /**
@@ -54,7 +62,9 @@ public class LoginActivity extends AppCompatActivity {
                     getString(R.string.log_in_alert_message),
                     getString(R.string.log_in_alert_button_text));
         } else {
-            mFireBaseAuth.signInWithEmailAndPassword(email, password)
+            mSubmitButton.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            mFirebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         /**
                          * Runs on completion of the sign in authentication
@@ -72,6 +82,8 @@ public class LoginActivity extends AppCompatActivity {
                                 showAlert(getString(R.string.log_in_alert_title),
                                         task.getException().getMessage(),
                                         getString(R.string.log_in_alert_button_text));
+                                mSubmitButton.setVisibility(View.VISIBLE);
+                                mProgressBar.setVisibility(View.GONE);
                             }
                         }
                     });
