@@ -1,5 +1,6 @@
 package com.coderafe.opinionated.activities;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
@@ -64,6 +65,14 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        mAnswerMoreQuestionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, AnswerQuestionActivity.class);
+                startActivity(intent);
             }
         });
 

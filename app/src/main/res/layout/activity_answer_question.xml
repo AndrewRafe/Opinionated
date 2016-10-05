@@ -10,4 +10,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.coderafe.opinionated.activities.AnswerQuestionActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/important_message_text_size"
+        android:layout_margin="@dimen/default_message_margin"
+        android:textAlignment="center"
+        android:id="@+id/answer_question_question_tv"/>
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/answer_question_progress_bar"
+        android:visibility="gone"/>
+
 </RelativeLayout>

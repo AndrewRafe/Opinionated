@@ -10,7 +10,7 @@ public class Question {
 
     private int mId;
     private String mQuestion;
-    private ArrayList<String> mOptions;
+    private ArrayList<Choice> mOptions;
 
     /**
      * Constructor method for the Question class that will set the question and all of the options
@@ -18,7 +18,7 @@ public class Question {
      * @param question A question as a String
      * @param options Array list of all possible options to answer the question
      */
-    public Question(int questionId, String question, ArrayList<String> options) {
+    public Question(int questionId, String question, ArrayList<Choice> options) {
         mId = questionId;
         mQuestion = question;
         mOptions = options;
@@ -44,7 +44,7 @@ public class Question {
      * Getter method to retrieve all of the options
      * @return options An ArrayList containing all of the options for answering the question
      */
-    public ArrayList<String> getOptions() {
+    public ArrayList<Choice> getOptions() {
         return mOptions;
     }
 }

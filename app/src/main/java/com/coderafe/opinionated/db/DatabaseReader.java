@@ -2,12 +2,14 @@ package com.coderafe.opinionated.db;
 
 import android.util.Log;
 
+import com.coderafe.opinionated.model.Question;
 import com.coderafe.opinionated.model.User;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 /**
@@ -17,6 +19,10 @@ import com.google.firebase.database.ValueEventListener;
 public class DatabaseReader {
 
     private final String LOAD_DATA_ERROR_TAG="LOAD_ERROR";
+
+    private final String QUESTION_TABLE="questions";
+    private final String QUESTION_TEXT_CHILD="questionText";
+    private final String QUESTION_ID_CHILD="questionId";
 
     private static final String USER_TABLE="users";
     private static final String BIRTH_YEAR_CHILD="birthYear";
@@ -28,6 +34,7 @@ public class DatabaseReader {
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mUserReference;
     private User mUser;
+    private Question mQuestion;
 
     public DatabaseReader(FirebaseUser user) {
         mDatabase = FirebaseDatabase.getInstance();
@@ -61,6 +68,26 @@ public class DatabaseReader {
      */
     public User getUser() {
         return mUser;
+    }
+
+    public Question getFirstQuestion() {
+        final DatabaseReference questionTableReference = mDatabase.getReference().child(QUESTION_TABLE);
+        questionTableReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String questionId = "0";
+                String questionText = (String) dataSnapshot.child(questionId)
+                        .child(QUESTION_TEXT_CHILD).getValue();
+                mQuestion = new Question(Integer.parseInt(questionId), questionText, null);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(LOAD_DATA_ERROR_TAG, "Failed to load question data");
+            }
+        });
+
+        return mQuestion;
     }
 
 
