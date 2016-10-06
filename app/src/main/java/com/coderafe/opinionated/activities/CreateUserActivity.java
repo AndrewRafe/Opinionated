@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.coderafe.opinionated.R;
+import com.coderafe.opinionated.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -78,6 +79,7 @@ public class CreateUserActivity extends AppCompatActivity {
                     getString(R.string.create_user_alert_message),
                     getString(R.string.create_user_alert_button_text));
         } else {
+
             //Make the progress bar visible
             mSubmitButton.setVisibility(View.GONE);
             mProgressBar.setVisibility(View.VISIBLE);

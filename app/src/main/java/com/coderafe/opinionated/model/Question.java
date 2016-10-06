@@ -10,18 +10,17 @@ public class Question {
 
     private int mId;
     private String mQuestion;
-    private ArrayList<Choice> mOptions;
+    private ArrayList<Choice> mChoices;
 
     /**
      * Constructor method for the Question class that will set the question and all of the options
      * @param questionId An associated id from a database
      * @param question A question as a String
-     * @param options Array list of all possible options to answer the question
      */
-    public Question(int questionId, String question, ArrayList<Choice> options) {
+    public Question(int questionId, String question) {
         mId = questionId;
         mQuestion = question;
-        mOptions = options;
+        mChoices = new ArrayList<Choice>();
     }
 
     /**
@@ -44,7 +43,15 @@ public class Question {
      * Getter method to retrieve all of the options
      * @return options An ArrayList containing all of the options for answering the question
      */
-    public ArrayList<Choice> getOptions() {
-        return mOptions;
+    public ArrayList<Choice> getChoices() {
+        return mChoices;
+    }
+
+    /**
+     * Will add a single choice to the list of choices associated with this question
+     * @param choice
+     */
+    public void addChoice(Choice choice) {
+        mChoices.add(choice);
     }
 }

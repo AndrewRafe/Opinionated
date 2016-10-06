@@ -5,15 +5,15 @@ package com.coderafe.opinionated.model;
  */
 public class Choice {
 
-    private long mChoiceId;
+    private String mChoiceId;
     private String mChoiceText;
 
-    public Choice(long choiceId, String choiceText) {
+    public Choice(String choiceId, String choiceText) {
         mChoiceId = choiceId;
         mChoiceText = choiceText;
     }
 
-    public long getChoiceId() {
+    public String getChoiceId() {
         return mChoiceId;
     }
 

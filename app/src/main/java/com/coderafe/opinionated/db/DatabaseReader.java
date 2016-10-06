@@ -2,6 +2,7 @@ package com.coderafe.opinionated.db;
 
 import android.util.Log;
 
+import com.coderafe.opinionated.model.Choice;
 import com.coderafe.opinionated.model.Question;
 import com.coderafe.opinionated.model.User;
 import com.google.firebase.auth.FirebaseUser;
@@ -12,9 +13,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 /**
  * Class to read from the firebase databse given a authorised user to access the information
- * Created by Andrew on 5/10/2016.
  */
 public class DatabaseReader {
 
@@ -23,6 +25,10 @@ public class DatabaseReader {
     private final String QUESTION_TABLE="questions";
     private final String QUESTION_TEXT_CHILD="questionText";
     private final String QUESTION_ID_CHILD="questionId";
+    private final String CHOICE_INSTANCES_TABLE="choiceInstances";
+    private final String CHOICE_ID_CHILD="choiceId";
+    private final String CHOICE_TABLE="choices";
+    private final String CHOICE_TEXT_CHILD="choiceText";
 
     private static final String USER_TABLE="users";
     private static final String BIRTH_YEAR_CHILD="birthYear";
@@ -71,19 +77,62 @@ public class DatabaseReader {
     }
 
     public Question getFirstQuestion() {
-        final DatabaseReference questionTableReference = mDatabase.getReference().child(QUESTION_TABLE);
+        DatabaseReference questionTableReference = mDatabase.getReference().child(QUESTION_TABLE);
         questionTableReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String questionId = "0";
                 String questionText = (String) dataSnapshot.child(questionId)
                         .child(QUESTION_TEXT_CHILD).getValue();
-                mQuestion = new Question(Integer.parseInt(questionId), questionText, null);
+                mQuestion = new Question(Integer.parseInt(questionId), questionText);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d(LOAD_DATA_ERROR_TAG, "Failed to load question data");
+            }
+        });
+
+        DatabaseReference choiceInstanceTableReference =
+                mDatabase.getReference().child(CHOICE_INSTANCES_TABLE);
+        choiceInstanceTableReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Query query = dataSnapshot.getRef().orderByChild(QUESTION_ID_CHILD).equalTo(mQuestion.getId());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        DataSnapshot singleChild = dataSnapshot.getChildren().iterator().next();
+                        while (singleChild != null) {
+                            String choiceId = singleChild.child(CHOICE_ID_CHILD).getValue().toString();
+                            DatabaseReference choiceReference = mDatabase.getReference()
+                                    .child(CHOICE_TABLE).child(choiceId);
+                            choiceReference.addListenerForSingleValueEvent
+                                    (new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Choice choice = new Choice(dataSnapshot.getKey(), dataSnapshot.child(CHOICE_TEXT_CHILD).getValue().toString());
+                                    mQuestion.addChoice(choice);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
