@@ -28,7 +28,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/title_title_margin"
+        android:layout_margin="@dimen/title_title_margin"
         android:id="@+id/home_main_layout">
 
         <TextView

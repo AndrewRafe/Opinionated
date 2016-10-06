@@ -109,7 +109,8 @@ public class HomeActivity extends AppCompatActivity {
                     + " " + mUser.getEmail());
 
             mQuestionsAnsweredTextView.setText(getString(R.string.home_questions_answered_message_part1)
-                    + " " + mUser.getNumQuestionsAnswered());
+                    + " " + mUser.getNumQuestionsAnswered() + " "
+                    + getString(R.string.home_questions_answered_message_part2));
             makeViewVisible(true);
         }
 
