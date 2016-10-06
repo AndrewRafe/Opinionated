@@ -35,6 +35,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.answer_question_progress_bar);
 
         establishReadConnection();
+        mDatabaseReader.loadFirstQuestion();
         mProgressBar.setVisibility(View.VISIBLE);
         new DownloadRandomQuestion().execute();
     }
@@ -60,8 +61,6 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     }
 
     private void establishReadConnection() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        mDatabaseReader = new DatabaseReader(firebaseUser);
+        mDatabaseReader = new DatabaseReader(FirebaseAuth.getInstance().getCurrentUser());
     }
 }

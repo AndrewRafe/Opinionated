@@ -76,42 +76,32 @@ public class DatabaseReader {
         return mUser;
     }
 
-    public Question getFirstQuestion() {
-        DatabaseReference questionTableReference = mDatabase.getReference().child(QUESTION_TABLE);
-        questionTableReference.addListenerForSingleValueEvent(new ValueEventListener() {
+    public void loadFirstQuestion() {
+
+        DatabaseReference dbReference = mDatabase.getReference();
+        dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                //TODO: BETTER METHOD TO SELECT QUESTION ID
                 String questionId = "0";
-                String questionText = (String) dataSnapshot.child(questionId)
+                String questionText = (String) dataSnapshot.child(QUESTION_TABLE).child(questionId)
                         .child(QUESTION_TEXT_CHILD).getValue();
-                mQuestion = new Question(Integer.parseInt(questionId), questionText);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(LOAD_DATA_ERROR_TAG, "Failed to load question data");
-            }
-        });
-
-        DatabaseReference choiceInstanceTableReference =
-                mDatabase.getReference().child(CHOICE_INSTANCES_TABLE);
-        choiceInstanceTableReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Query query = dataSnapshot.getRef().orderByChild(QUESTION_ID_CHILD).equalTo(mQuestion.getId());
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                Log.d("Question Text", questionText);
+                mQuestion = new Question(questionId, questionText);
+                /*
+                Query findChoiceIds = dataSnapshot.getRef().child(CHOICE_INSTANCES_TABLE).orderByChild(QUESTION_ID_CHILD).equalTo(questionId);
+                findChoiceIds.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         DataSnapshot singleChild = dataSnapshot.getChildren().iterator().next();
                         while (singleChild != null) {
-                            String choiceId = singleChild.child(CHOICE_ID_CHILD).getValue().toString();
+                            String choiceId = (String) singleChild.child(CHOICE_ID_CHILD).getValue();
                             DatabaseReference choiceReference = mDatabase.getReference()
                                     .child(CHOICE_TABLE).child(choiceId);
-                            choiceReference.addListenerForSingleValueEvent
-                                    (new ValueEventListener() {
+                            choiceReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Choice choice = new Choice(dataSnapshot.getKey(), dataSnapshot.child(CHOICE_TEXT_CHILD).getValue().toString());
+                                    Choice choice = new Choice(dataSnapshot.getKey(), (String) dataSnapshot.child(CHOICE_TEXT_CHILD).getValue());
                                     mQuestion.addChoice(choice);
                                 }
 
@@ -120,7 +110,10 @@ public class DatabaseReader {
 
                                 }
                             });
+                            //Find the next choice option
+                            singleChild = dataSnapshot.getChildren().iterator().next();
                         }
+
                     }
 
                     @Override
@@ -128,14 +121,19 @@ public class DatabaseReader {
 
                     }
                 });
+            */
             }
+
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d(LOAD_DATA_ERROR_TAG,"Question Data not loaded");
             }
         });
 
+    }
+
+    public Question getFirstQuestion() {
         return mQuestion;
     }
 

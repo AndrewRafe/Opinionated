@@ -21,6 +21,7 @@ import com.coderafe.opinionated.db.DatabaseReader;
 import com.coderafe.opinionated.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 /**
  * The home activity is the screen that the user will be on when they login or re-enter the app
@@ -79,8 +80,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void establishReadConnection() {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        mDatabaseReader = new DatabaseReader(firebaseUser);
+        mDatabaseReader = new DatabaseReader(firebaseAuth.getCurrentUser());
     }
 
     /**

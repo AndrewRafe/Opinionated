@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class Question {
 
-    private int mId;
+    private String mId;
     private String mQuestion;
     private ArrayList<Choice> mChoices;
 
@@ -17,7 +17,7 @@ public class Question {
      * @param questionId An associated id from a database
      * @param question A question as a String
      */
-    public Question(int questionId, String question) {
+    public Question(String questionId, String question) {
         mId = questionId;
         mQuestion = question;
         mChoices = new ArrayList<Choice>();
@@ -27,7 +27,7 @@ public class Question {
      * Getter method to return the id number of the question
      * @return questionID
      */
-    public int getId() {
+    public String getId() {
         return mId;
     }
 
