@@ -21,4 +21,8 @@ public class Choice {
         return mChoiceText;
     }
 
+    public String toString() {
+        return "ID: " + mChoiceId + ", Choice Text: " + mChoiceText;
+    }
+
 }

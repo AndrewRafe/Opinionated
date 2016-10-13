@@ -29,6 +29,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
     private final String ASYNC_TASK_TAG = "ASYNC";
     private final String UI_GENERATION = "UI_GENERATION";
+    private final String ON_CLICK_TAG = "ON_CLICK";
 
     private Question mQuestion;
     private DatabaseReader mDatabaseReader;
@@ -135,13 +136,31 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         public OnClickSubmitAnswer(Question question, Choice choice) {
             this.mQuestion = question;
             this.mChoice = choice;
+            Log.d(ON_CLICK_TAG, "" + this.mChoice);
         }
 
         @Override
         public void onClick(View view) {
-            mDatabaseWriter.submitAnswer(this.mQuestion, this.mChoice);
-            Intent intent = new Intent(AnswerQuestionActivity.this, HomeActivity.class);
-            startActivity(intent);
+            new FindChoiceInstanceId().execute();
         }
+
+        private class FindChoiceInstanceId extends AsyncTask<Void, Void, String> {
+            @Override
+            protected String doInBackground(Void... voids) {
+                mDatabaseReader.findChoiceInstanceId(mQuestion, mChoice);
+                while(mDatabaseReader.getChoiceInstanceId() == null){}
+                return mDatabaseReader.getChoiceInstanceId();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                mDatabaseWriter.submitAnswer(s);
+                Intent intent = new Intent(AnswerQuestionActivity.this, HomeActivity.class);
+                startActivity(intent);
+            }
+        }
+
     }
+
+
 }

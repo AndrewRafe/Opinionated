@@ -74,9 +74,17 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //new LoadUserData().execute();
         //Toast toast = Toast.makeText(this, mUser.getEmail(), Toast.LENGTH_LONG);
         //toast.show();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new LoadUserData().execute();
+    }
+
 
     private void establishReadConnection() {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();

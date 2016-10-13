@@ -47,6 +47,7 @@ public class DatabaseReader {
     private DatabaseReference mUserReference;
     private User mUser;
     private Question mQuestion;
+    private String mChoiceInstanceId;
 
     public DatabaseReader(FirebaseUser user) {
         mDatabase = FirebaseDatabase.getInstance();
@@ -153,6 +154,41 @@ public class DatabaseReader {
 
     public Question getFirstQuestion() {
         return mQuestion;
+    }
+
+    public void findChoiceInstanceId(Question question, Choice choice) {
+
+        DatabaseReference dbReference = mDatabase.getReference();
+        final Question givenQuestion = question;
+        final Choice givenChoice = choice;
+        Query query = dbReference.child(CHOICE_INSTANCE_TABLE).orderByKey();
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    for(DataSnapshot singleChoiceInstance: dataSnapshot.getChildren()) {
+                        if (singleChoiceInstance.child(QUESTION_ID_CHILD).getValue().toString().equals(givenQuestion.getId())
+                                && singleChoiceInstance.child(CHOICE_ID_CHILD).getValue().toString().equals(givenChoice.getChoiceId())) {
+                            mChoiceInstanceId = singleChoiceInstance.getKey().toString();
+                        }
+                    }
+
+                } catch (NoSuchElementException noSuchElementException) {
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public String getChoiceInstanceId() {
+        return mChoiceInstanceId;
     }
 
 }

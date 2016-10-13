@@ -55,6 +55,7 @@ public class Question {
      * Will add a single choice to the list of choices associated with this question
      * @param choice
      */
+
     public void addChoice(Choice choice) {
         mChoices.add(choice);
     }

@@ -1,6 +1,8 @@
 package com.coderafe.opinionated.db;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.coderafe.opinionated.model.Answer;
 import com.coderafe.opinionated.model.Choice;
@@ -15,10 +17,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Class to write information to the firebase database
@@ -29,11 +34,16 @@ public class DatabaseWriter {
     private final String USER_ID_CHILD="userId";
     private final String CHOICE_INSTANCE_ID="choiceInstance";
     private final String QUESTIONS_ANSWERED_CHILD="questionsAnswered";
-
+    private final String CHOICE_INSTANCE_TABLE="choiceInstances";
+    private final String QUESTION_ID_CHILD="questionId";
+    private final String CHOICE_ID_CHILD="choiceId";
     private final String USER_TABLE="users";
+
+    private final String CHOICE_INSTANCE_ID_FIND_TAG="CHOICE_INSTANCE_FIND";
 
     private DatabaseReference mDatabase;
     private FirebaseUser mFirebaseUser;
+
 
     public DatabaseWriter(FirebaseUser firebaseUser) {
 
@@ -42,13 +52,12 @@ public class DatabaseWriter {
 
     }
 
-    public void submitAnswer(Question question, Choice choice) {
-        //TODO: Find the choice instance ID
+    public void submitAnswer(String choiceInstanceId) {
         //TODO: Create an answer model and push to firebase
 
         Map<String, String> post = new HashMap<String,String>();
         post.put(USER_ID_CHILD, mFirebaseUser.getUid());
-        post.put(CHOICE_INSTANCE_ID, "0");
+        post.put(CHOICE_INSTANCE_ID, choiceInstanceId);
         mDatabase.child(ANSWER_TABLE).push().setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
             /**
              * Updates that the user has answered this question by increment questionsAnswered field
@@ -72,12 +81,6 @@ public class DatabaseWriter {
                 });
             }
         });
-    }
-
-    private String findChoiceInstanceId(Question question, Choice choice) {
-        String choiceInstanceId = "";
-
-        return choiceInstanceId;
     }
 
 
