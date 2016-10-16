@@ -53,7 +53,6 @@ public class DatabaseWriter {
     }
 
     public void submitAnswer(String choiceInstanceId) {
-        //TODO: Create an answer model and push to firebase
 
         Map<String, String> post = new HashMap<String,String>();
         post.put(USER_ID_CHILD, mFirebaseUser.getUid());

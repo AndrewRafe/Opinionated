@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class AnswerQuestionActivity extends AppCompatActivity {
 
@@ -81,7 +82,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     }
 
     private void generateChoiceGridLayout() {
-        final ArrayList<Choice> choices = mQuestion.getChoices();
+        final LinkedList<Choice> choices = mQuestion.getChoices();
 
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);

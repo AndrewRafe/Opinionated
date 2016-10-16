@@ -1,6 +1,7 @@
 package com.coderafe.opinionated.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Created by Andrew on 21/09/2016.
@@ -11,7 +12,7 @@ public class Question {
     private String mId;
     private String mQuestion;
     private long mNumChoices;
-    private ArrayList<Choice> mChoices;
+    private LinkedList<Choice> mChoices;
     private boolean mIsAllChoicesLoaded;
 
     /**
@@ -23,7 +24,7 @@ public class Question {
         mId = questionId;
         mQuestion = question;
         mNumChoices = numChoices;
-        mChoices = new ArrayList<Choice>();
+        mChoices = new LinkedList<Choice>();
         mIsAllChoicesLoaded = false;
     }
 
@@ -47,7 +48,7 @@ public class Question {
      * Getter method to retrieve all of the options
      * @return options An ArrayList containing all of the options for answering the question
      */
-    public ArrayList<Choice> getChoices() {
+    public LinkedList<Choice> getChoices() {
         return mChoices;
     }
 

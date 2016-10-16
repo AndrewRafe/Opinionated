@@ -41,4 +41,6 @@
     <string name="home_questions_answered_message_part1">You have answered </string>
     <string name="home_questions_answered_message_part2"> questions</string>
     <string name="home_answer_questions_button_text">Answer More Questions</string>
+    <string name="home_explore_results_btn">Explore the Data</string>
+    <string name="home_explore_results_tv_text">Click below to explore the results of the questions you have answered</string>
 </resources>

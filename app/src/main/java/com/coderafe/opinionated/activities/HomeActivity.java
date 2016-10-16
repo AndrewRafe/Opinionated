@@ -36,6 +36,8 @@ public class HomeActivity extends AppCompatActivity {
     private TextView mWelcomeTextView;
     private TextView mQuestionsAnsweredTextView;
     private Button mAnswerMoreQuestionsButton;
+    private TextView mExploreResultsTextView;
+    private Button mExploreResultsButton;
 
     private RelativeLayout mMainLayout;
     private ProgressBar mLoadDataProgressBar;
@@ -53,8 +55,18 @@ public class HomeActivity extends AppCompatActivity {
         mWelcomeTextView = (TextView) findViewById(R.id.home_welcome_tv);
         mQuestionsAnsweredTextView = (TextView) findViewById(R.id.home_questions_answered_tv);
         mAnswerMoreQuestionsButton = (Button) findViewById(R.id.home_answer_questions_btn);
+        mExploreResultsTextView = (TextView) findViewById(R.id.home_explore_results_tv);
+        mExploreResultsButton = (Button) findViewById(R.id.home_explore_results_btn);
         mMainLayout = (RelativeLayout) findViewById(R.id.home_main_layout);
         mLoadDataProgressBar = (ProgressBar) findViewById(R.id.home_load_data_progress_bar);
+
+        mExploreResultsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, DataExplorationActivity.class);
+                startActivity(intent);
+            }
+        });
 
         //Dont show the views until data is loaded
         makeViewVisible(false);
@@ -133,11 +145,15 @@ public class HomeActivity extends AppCompatActivity {
             mQuestionsAnsweredTextView.setVisibility(View.VISIBLE);
             mWelcomeTextView.setVisibility(View.VISIBLE);
             mAnswerMoreQuestionsButton.setVisibility(View.VISIBLE);
+            mExploreResultsButton.setVisibility(View.VISIBLE);
+            mExploreResultsTextView.setVisibility(View.VISIBLE);
             mLoadDataProgressBar.setVisibility(View.GONE);
         } else {
             mQuestionsAnsweredTextView.setVisibility(View.GONE);
             mWelcomeTextView.setVisibility(View.GONE);
             mAnswerMoreQuestionsButton.setVisibility(View.GONE);
+            mExploreResultsButton.setVisibility(View.GONE);
+            mExploreResultsTextView.setVisibility(View.GONE);
             mLoadDataProgressBar.setVisibility(View.VISIBLE);
         }
     }

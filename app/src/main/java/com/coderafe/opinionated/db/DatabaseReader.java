@@ -3,6 +3,7 @@ package com.coderafe.opinionated.db;
 import android.util.Log;
 
 import com.coderafe.opinionated.model.Choice;
+import com.coderafe.opinionated.model.ChoiceInstance;
 import com.coderafe.opinionated.model.Question;
 import com.coderafe.opinionated.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -15,7 +16,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPoint;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -35,6 +42,8 @@ public class DatabaseReader {
     private final String CHOICE_INSTANCE_TABLE="choiceInstances";
     private final String CHOICE_TABLE="choices";
     private final String CHOICE_TEXT_CHILD="choiceText";
+    private final String ANSWER_TABLE="answers";
+    private final String CHOICE_INSTANCE_CHILD="choiceInstanceId";
 
     private static final String USER_TABLE="users";
     private static final String BIRTH_YEAR_CHILD="birthYear";
@@ -48,6 +57,11 @@ public class DatabaseReader {
     private User mUser;
     private Question mQuestion;
     private String mChoiceInstanceId;
+
+    //Global Variables for Inner Classes
+    private BarGraphSeries<DataPoint> mOverallBarGraphPoints;
+    private LinkedList<Map<String, Integer>> mResponseCount;
+
 
     public DatabaseReader(FirebaseUser user) {
         mDatabase = FirebaseDatabase.getInstance();
@@ -185,6 +199,83 @@ public class DatabaseReader {
             }
         });
 
+    }
+
+    public void loadOverallBarGraphResults(Question question) {
+        Log.d("QUESTION", question.getQuestion());
+        final Question givenQuestion = question;
+        mResponseCount = new LinkedList<Map<String,Integer>>();
+        LinkedList<Choice> questionChoices = question.getChoices();
+        Log.d("MAP", questionChoices.get(0).getChoiceText());
+        for (int i = 0; i < question.getNumChoices(); i++) {
+            HashMap<String, Integer> map = new HashMap<>();
+            Log.d("MAP", questionChoices.get(i).getChoiceText());
+            map.put(questionChoices.get(i).getChoiceId(), 0);
+            mResponseCount.add(map);
+        }
+        DatabaseReference dbReference = mDatabase.getReference();
+        dbReference = dbReference.child(ANSWER_TABLE);
+        Query query = dbReference.orderByKey();
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleAnswerInstance: dataSnapshot.getChildren()) {
+                    DatabaseReference choiceInstanceReference =
+                            mDatabase.getReference().child(CHOICE_INSTANCE_TABLE).child(singleAnswerInstance.child(CHOICE_INSTANCE_CHILD).getValue().toString());
+                    choiceInstanceReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.child(QUESTION_ID_CHILD).equals(givenQuestion.getId())) {
+
+                                for (Map<String, Integer> map: mResponseCount) {
+                                    if (map.containsKey(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString())) {
+                                        int count = map.get(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString());
+                                        count++;
+                                        map.put(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString(), count);
+                                    }
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
+
+    public BarGraphSeries<DataPoint> getOverallBarGraphDataPoints(Question question) {
+        DataPoint[] dataPoints = new DataPoint[(int)question.getNumChoices()];
+
+        int i = 0;
+        for(Map<String, Integer> map: mResponseCount) {
+            dataPoints[i] = new DataPoint(i, map.get("" + i));
+            i++;
+        }
+
+        BarGraphSeries<DataPoint> barGraphDataPoints = new BarGraphSeries<>(dataPoints);
+        if (mResponseCount.size() < question.getNumChoices()) {
+            Log.d("TEST", "Size: " + mResponseCount.size() + ", Num Choices in Question" + question.getNumChoices());
+        } else {
+            mOverallBarGraphPoints = barGraphDataPoints;
+        }
+
+        return mOverallBarGraphPoints;
     }
 
     public String getChoiceInstanceId() {
