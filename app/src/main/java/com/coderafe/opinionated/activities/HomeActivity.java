@@ -3,25 +3,22 @@ package com.coderafe.opinionated.activities;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.coderafe.opinionated.R;
 import com.coderafe.opinionated.db.DatabaseReader;
 import com.coderafe.opinionated.model.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 
 /**
  * The home activity is the screen that the user will be on when they login or re-enter the app
@@ -42,6 +39,12 @@ public class HomeActivity extends AppCompatActivity {
     private RelativeLayout mMainLayout;
     private ProgressBar mLoadDataProgressBar;
 
+    /**
+     * Sets up all member variables and views when the activity is created
+     * Creates an instance of the database reader and reads in the currently
+     * authorised user
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,8 +71,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        //Dont show the views until data is loaded
-        makeViewVisible(false);
         new LoadUserData().execute();
 
         mAnswerMoreQuestionsButton.setOnClickListener(new View.OnClickListener() {
@@ -83,21 +84,48 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //new LoadUserData().execute();
-        //Toast toast = Toast.makeText(this, mUser.getEmail(), Toast.LENGTH_LONG);
-        //toast.show();
-    }
-
+    /**
+     * Refreshes the UI elements in the activity when the activity is resumed
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        new LoadUserData().execute();
+        refreshPage();
     }
 
+    /**
+     * Inflates the menu on the action bar from a layout
+     * @param menu
+     * @return Whether the options menu was created successfully
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.home_menu, menu);
+        return true;
+    }
 
+    /**
+     * Handles any of the options that are selected on the action menu
+     * @param menuItem
+     * @return Whether the menu option was handled correctly
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        int id = menuItem.getItemId();
+
+        if (id == R.id.home_menu_refresh) {
+            refreshPage();
+        } else if (id == R.id.home_menu_logout) {
+            logout();
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    /**
+     * Creates an instance of the database reader class that allows the communication
+     * with the firebase database
+     */
     private void establishReadConnection() {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mDatabaseReader = new DatabaseReader(firebaseAuth.getCurrentUser());
@@ -107,6 +135,21 @@ public class HomeActivity extends AppCompatActivity {
      * Async Task that loads the user data off the main thread to be displayed in this activity
      */
     private class LoadUserData extends AsyncTask<Void, Void, User> {
+
+        /**
+         * Before the async task begins the views on this activity will be hidden
+         */
+        @Override
+        public void onPreExecute() {
+            makeViewVisible(false);
+        }
+
+        /**
+         * While the database reader is attempting to read the user data, this waits until it has
+         * been loaded before updating any of the UI elements related to the user
+         * @param voids
+         * @return
+         */
         @Override
         public User doInBackground(Void... voids) {
             User user = mDatabaseReader.getUser();
@@ -116,11 +159,12 @@ public class HomeActivity extends AppCompatActivity {
             return user;
         }
 
-        @Override
-        public void onProgressUpdate(Void... voids) {
-
-        }
-
+        /**
+         * Sets the user retrieved from the doInBackground method and stores in the mUser
+         * member variable. It also sets up the text for the activity and removes the progress
+         * bar and makes all the other views visible
+         * @param user The user loaded in the doInBackground method
+         */
         @Override
         public void onPostExecute(User user) {
             mUser = user;
@@ -156,6 +200,26 @@ public class HomeActivity extends AppCompatActivity {
             mExploreResultsTextView.setVisibility(View.GONE);
             mLoadDataProgressBar.setVisibility(View.VISIBLE);
         }
+    }
+
+    /**
+     * On click method that refreshes the information on the page
+     */
+    public void refreshPage() {
+        mDatabaseReader.clearAllReadData();
+        mDatabaseReader.loadUser();
+        new LoadUserData().execute();
+    }
+
+    /**
+     * On click method for the logout option in the action bar menu. Will send the user back
+     * to the title activity as well as suspending their authentication to the database
+     */
+    public void logout() {
+        Intent intent = new Intent(HomeActivity.this, TitleActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
 

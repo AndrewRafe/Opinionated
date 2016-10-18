@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/title_text_size"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Display2"
         android:id="@+id/title_title_tv"
         android:text="@string/app_name"
         android:layout_marginTop="@dimen/title_title_margin"
@@ -27,7 +27,7 @@
         android:layout_marginTop="@dimen/title_welcome_message_margin"
         android:text="@string/title_welcome_message"
         android:layout_below="@+id/title_title_tv"
-        android:textSize="@dimen/important_message_text_size"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
         android:gravity="center"/>
 
     <TextView
@@ -36,6 +36,7 @@
         android:layout_below="@id/title_welcome_message_tv"
         android:id="@+id/title_option_explanation_tv"
         android:text="@string/title_option_explanation"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
         android:layout_margin="@dimen/default_message_margin"/>
 
     <Button
@@ -44,6 +45,7 @@
         android:layout_below="@id/title_option_explanation_tv"
         android:id="@+id/title_login_btn"
         android:text="@string/title_login_button"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
         android:onClick="logIn"
         android:layout_marginTop="@dimen/default_message_margin"
         android:layout_centerHorizontal="true"/>
@@ -52,6 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/title_login_btn"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
         android:id="@+id/title_create_user_btn"
         android:text="@string/title_create_user_button"
         android:onClick="createUser"

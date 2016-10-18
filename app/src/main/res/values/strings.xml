@@ -43,4 +43,8 @@
     <string name="home_answer_questions_button_text">Answer More Questions</string>
     <string name="home_explore_results_btn">Explore the Data</string>
     <string name="home_explore_results_tv_text">Click below to explore the results of the questions you have answered</string>
+
+    <!-- Home Menu Strings -->
+    <string name="home_menu_refresh">Refresh</string>
+    <string name="home_menu_logout">Logout</string>
 </resources>

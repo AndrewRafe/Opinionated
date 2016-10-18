@@ -7,6 +7,7 @@ import com.coderafe.opinionated.model.ChoiceInstance;
 import com.coderafe.opinionated.model.Question;
 import com.coderafe.opinionated.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -43,7 +44,7 @@ public class DatabaseReader {
     private final String CHOICE_TABLE="choices";
     private final String CHOICE_TEXT_CHILD="choiceText";
     private final String ANSWER_TABLE="answers";
-    private final String CHOICE_INSTANCE_CHILD="choiceInstanceId";
+    private final String CHOICE_INSTANCE_CHILD="choiceInstance";
 
     private static final String USER_TABLE="users";
     private static final String BIRTH_YEAR_CHILD="birthYear";
@@ -61,13 +62,24 @@ public class DatabaseReader {
     //Global Variables for Inner Classes
     private BarGraphSeries<DataPoint> mOverallBarGraphPoints;
     private LinkedList<Map<String, Integer>> mResponseCount;
+    private boolean mLoadedResults;
+    private int mAnswerCount;
 
 
     public DatabaseReader(FirebaseUser user) {
         mDatabase = FirebaseDatabase.getInstance();
         mFirebaseUser = user;
         mUserReference = mDatabase.getReference().child(USER_TABLE).child(user.getUid());
+        mLoadedResults = false;
+        mAnswerCount = 0;
+        loadUser();
 
+    }
+
+    /**
+     * Loads the current authority user into the user model stored in this class
+     */
+    public void loadUser() {
         mUserReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -202,11 +214,10 @@ public class DatabaseReader {
     }
 
     public void loadOverallBarGraphResults(Question question) {
-        Log.d("QUESTION", question.getQuestion());
+        mLoadedResults = false;
         final Question givenQuestion = question;
-        mResponseCount = new LinkedList<Map<String,Integer>>();
+        mResponseCount = new LinkedList<>();
         LinkedList<Choice> questionChoices = question.getChoices();
-        Log.d("MAP", questionChoices.get(0).getChoiceText());
         for (int i = 0; i < question.getNumChoices(); i++) {
             HashMap<String, Integer> map = new HashMap<>();
             Log.d("MAP", questionChoices.get(i).getChoiceText());
@@ -225,17 +236,19 @@ public class DatabaseReader {
                     choiceInstanceReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.child(QUESTION_ID_CHILD).equals(givenQuestion.getId())) {
-
+                            if (dataSnapshot.child(QUESTION_ID_CHILD).getValue().toString() == givenQuestion.getId()) {
                                 for (Map<String, Integer> map: mResponseCount) {
                                     if (map.containsKey(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString())) {
                                         int count = map.get(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString());
+                                        Log.d("DEBUG", "Choice: " + dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString() + "Count" + count);
                                         count++;
                                         map.put(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString(), count);
                                     }
                                 }
 
                             }
+                            Log.d("DEBUG", "All results loaded");
+                            mLoadedResults = true;
                         }
 
                         @Override
@@ -245,8 +258,8 @@ public class DatabaseReader {
                     });
 
 
-
                 }
+
             }
 
             @Override
@@ -259,27 +272,50 @@ public class DatabaseReader {
 
     }
 
-    public BarGraphSeries<DataPoint> getOverallBarGraphDataPoints(Question question) {
-        DataPoint[] dataPoints = new DataPoint[(int)question.getNumChoices()];
-
-        int i = 0;
-        for(Map<String, Integer> map: mResponseCount) {
-            dataPoints[i] = new DataPoint(i, map.get("" + i));
-            i++;
-        }
-
-        BarGraphSeries<DataPoint> barGraphDataPoints = new BarGraphSeries<>(dataPoints);
-        if (mResponseCount.size() < question.getNumChoices()) {
-            Log.d("TEST", "Size: " + mResponseCount.size() + ", Num Choices in Question" + question.getNumChoices());
-        } else {
-            mOverallBarGraphPoints = barGraphDataPoints;
-        }
-
+    public BarGraphSeries<DataPoint> getOverallBarGraphDataPoints() {
         return mOverallBarGraphPoints;
+    }
+
+    public void refreshOverallBarGraphDataPoints(Question question) {
+        try {
+            DataPoint[] dataPoints = new DataPoint[(int)question.getNumChoices()];
+
+            int i = 0;
+            for(Map<String, Integer> map: mResponseCount) {
+                dataPoints[i] = new DataPoint(i, map.get("" + i));
+                Log.d("I", i + "");
+                i++;
+            }
+
+            BarGraphSeries<DataPoint> barGraphDataPoints = new BarGraphSeries<>(dataPoints);
+            if (mResponseCount.size() < question.getNumChoices()) {
+                Log.d("TEST", "Size: " + mResponseCount.size() + ", Num Choices in Question" + question.getNumChoices());
+            } else {
+                mOverallBarGraphPoints = barGraphDataPoints;
+            }
+            mOverallBarGraphPoints = barGraphDataPoints;
+        } catch (NullPointerException e){
+            Log.d("NULL", "null pointer exception in database reader, getOverallBarGraphDataPoints");
+        }
+
+    }
+
+    public boolean isResultsLoaded() {
+        return mLoadedResults;
     }
 
     public String getChoiceInstanceId() {
         return mChoiceInstanceId;
+    }
+
+    public void clearAllReadData() {
+        mUser = null;
+        mQuestion = null;
+        mChoiceInstanceId = null;
+        mOverallBarGraphPoints = null;
+        mResponseCount = null;
+        mLoadedResults = false;
+        mAnswerCount = 0;
     }
 
 }
