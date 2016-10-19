@@ -1,21 +1,12 @@
 package com.coderafe.opinionated.db;
 
-import android.os.AsyncTask;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-
 import com.coderafe.opinionated.model.Choice;
-import com.coderafe.opinionated.model.ChoiceInstance;
 import com.coderafe.opinionated.model.Question;
 import com.coderafe.opinionated.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -23,15 +14,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * Class to read from the firebase databse given a authorised user to access the information
+ * Class to read from the firebase database given an authorised user to access the information
  * Created by Andrew on 5/10/2016.
  */
 public class DatabaseReader {
@@ -77,6 +66,10 @@ public class DatabaseReader {
     private LinkedList<String> mAllQuestionIds;
     private boolean mIsAllQuestionIdsLoaded;
 
+    /**
+     * Sets up the database reference and initialises member variables
+     * @param user
+     */
     public DatabaseReader(FirebaseUser user) {
         mDatabase = FirebaseDatabase.getInstance();
         mFirebaseUser = user;
@@ -122,12 +115,16 @@ public class DatabaseReader {
     }
 
 
-
+    /**
+     * Loads a single question given a questionId
+     * @param questionId The questionId that you want to download
+     */
     public void loadQuestion(String questionId) {
         mQuestion = null;
         Log.d(LOAD_DATA, "Starting to load question");
         final String givenQuestionId = questionId;
-        final DatabaseReference questionTableReference = mDatabase.getReference().child(QUESTION_TABLE);
+        final DatabaseReference questionTableReference =
+                mDatabase.getReference().child(QUESTION_TABLE);
         Log.d(LOAD_DATA, "Question Table Reference Created : " + questionTableReference.toString());
 
         questionTableReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -142,7 +139,8 @@ public class DatabaseReader {
                             .child(NUM_CHOICES_CHILD).getValue();
                     String extraInfoLink = dataSnapshot.child(givenQuestionId)
                             .child(QUESTION_LINK_CHILD).getValue().toString();
-                    mQuestion = new Question(givenQuestionId, questionText, numChoices, extraInfoLink);
+                    mQuestion = new Question(givenQuestionId,
+                            questionText, numChoices, extraInfoLink);
                 } catch (NullPointerException e) {
                     Log.d(LOAD_DATA_ERROR_TAG, "The question id parsed to loadQuestion is null");
                     throw e;
@@ -150,7 +148,8 @@ public class DatabaseReader {
 
                 Log.d(LOAD_DATA, "Size of all questions: " + mAllQuestions.size());
                 //Search choice instance table to find where questionId is referenced
-                DatabaseReference choiceInstanceReference = mDatabase.getReference().child(CHOICE_INSTANCE_TABLE);
+                DatabaseReference choiceInstanceReference =
+                        mDatabase.getReference().child(CHOICE_INSTANCE_TABLE);
                 Query query = choiceInstanceReference.orderByKey();
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -159,22 +158,31 @@ public class DatabaseReader {
                         try {
                             for(DataSnapshot singleChoiceInstance: dataSnapshot.getChildren()) {
                                 Log.d(LOAD_DATA, singleChoiceInstance.toString());
-                                if (singleChoiceInstance.child(QUESTION_ID_CHILD).getValue().toString().equals(mQuestion.getId())) {
-                                    String choiceId = singleChoiceInstance.child(CHOICE_ID_CHILD).getValue().toString();
-                                    DatabaseReference choiceReference = mDatabase.getReference().child(CHOICE_TABLE).child(choiceId);
-                                    choiceReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                if (singleChoiceInstance.child(QUESTION_ID_CHILD)
+                                        .getValue().toString().equals(mQuestion.getId())) {
+                                    String choiceId = singleChoiceInstance.child(CHOICE_ID_CHILD)
+                                            .getValue().toString();
+                                    DatabaseReference choiceReference = mDatabase.getReference()
+                                            .child(CHOICE_TABLE).child(choiceId);
+                                    choiceReference.addListenerForSingleValueEvent
+                                            (new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            Choice choice = new Choice(dataSnapshot.getKey(), (String) dataSnapshot.child(CHOICE_TEXT_CHILD).getValue());
+                                            Choice choice = new Choice(dataSnapshot.getKey(),
+                                                    (String) dataSnapshot.child(CHOICE_TEXT_CHILD)
+                                                            .getValue());
                                             mQuestion.addChoice(choice);
-                                            Log.d(CHOICE_LOAD_TAG, "Choice with text: " + choice.getChoiceText());
+                                            Log.d(CHOICE_LOAD_TAG, "Choice with text: "
+                                                    + choice.getChoiceText());
                                             try {
-                                                if(mQuestion.getNumChoices() == mQuestion.getChoices().size()) {
+                                                if(mQuestion.getNumChoices() ==
+                                                        mQuestion.getChoices().size()) {
                                                     mAllQuestions.add(mQuestion);
 
                                                 }
                                             } catch (NullPointerException e) {
-                                                Log.d(NULL_TAG, "Tried to dereference null question");
+                                                Log.d(NULL_TAG,
+                                                        "Tried to dereference null question");
                                             }
 
                                         }
@@ -199,11 +207,7 @@ public class DatabaseReader {
                         Log.d(LOAD_DATA_ERROR_TAG, databaseError.toString());
                     }
                 });
-
-
-
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d(LOAD_DATA_ERROR_TAG, "Failed to load question data");
@@ -212,10 +216,19 @@ public class DatabaseReader {
 
     }
 
+    /**
+     * Retrieves the question stored in this class
+     * @return The question currently loaded into this class, could be null if no question loaded
+     */
     public Question getFirstQuestion() {
         return mQuestion;
     }
 
+    /**
+     * Loads the choice instance id into this class given the question and the choice
+     * @param question The question model
+     * @param choice The choice model
+     */
     public void findChoiceInstanceId(Question question, Choice choice) {
 
         DatabaseReference dbReference = mDatabase.getReference();
@@ -227,8 +240,10 @@ public class DatabaseReader {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
                     for(DataSnapshot singleChoiceInstance: dataSnapshot.getChildren()) {
-                        if (singleChoiceInstance.child(QUESTION_ID_CHILD).getValue().toString().equals(givenQuestion.getId())
-                                && singleChoiceInstance.child(CHOICE_ID_CHILD).getValue().toString().equals(givenChoice.getChoiceId())) {
+                        if (singleChoiceInstance.child(QUESTION_ID_CHILD)
+                                .getValue().toString().equals(givenQuestion.getId())
+                                && singleChoiceInstance.child(CHOICE_ID_CHILD)
+                                .getValue().toString().equals(givenChoice.getChoiceId())) {
                             mChoiceInstanceId = singleChoiceInstance.getKey().toString();
                         }
                     }
@@ -247,6 +262,10 @@ public class DatabaseReader {
 
     }
 
+    /**
+     * Loads the bar graph results of the overall responses into this class
+     * @param question The question that you want to get the bar graph results of
+     */
     public void loadOverallBarGraphResults(Question question) {
         final Question givenQuestion = question;
         mResponseCount = new LinkedList<>();
@@ -265,17 +284,26 @@ public class DatabaseReader {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot singleAnswerInstance: dataSnapshot.getChildren()) {
                     DatabaseReference choiceInstanceReference =
-                            mDatabase.getReference().child(CHOICE_INSTANCE_TABLE).child(singleAnswerInstance.child(CHOICE_INSTANCE_CHILD).getValue().toString());
-                    choiceInstanceReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                            mDatabase.getReference().child(CHOICE_INSTANCE_TABLE)
+                                    .child(singleAnswerInstance.child(CHOICE_INSTANCE_CHILD)
+                                            .getValue().toString());
+                    choiceInstanceReference.orderByKey().addListenerForSingleValueEvent
+                            (new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.child(QUESTION_ID_CHILD).getValue().toString().equalsIgnoreCase(givenQuestion.getId())) {
+                            if (dataSnapshot.child(QUESTION_ID_CHILD).getValue()
+                                    .toString().equalsIgnoreCase(givenQuestion.getId())) {
                                 for (Map<String, Integer> map: mResponseCount) {
-                                    if (map.containsKey(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString())) {
-                                        int count = map.get(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString());
-                                        Log.d("DEBUG", "Choice: " + dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString() + "Count" + count);
+                                    if (map.containsKey(dataSnapshot.child(CHOICE_ID_CHILD)
+                                            .getValue().toString())) {
+                                        int count = map.get(dataSnapshot.child(CHOICE_ID_CHILD)
+                                                .getValue().toString());
+                                        Log.d("DEBUG", "Choice: " + dataSnapshot
+                                                .child(CHOICE_ID_CHILD).getValue().toString()
+                                                + "Count" + count);
                                         count++;
-                                        map.put(dataSnapshot.child(CHOICE_ID_CHILD).getValue().toString(), count);
+                                        map.put(dataSnapshot.child(CHOICE_ID_CHILD)
+                                                .getValue().toString(), count);
                                     }
                                 }
 
@@ -303,44 +331,52 @@ public class DatabaseReader {
 
     }
 
+    /**
+     * Gets the bar graph results that are currently stored in this class
+     * @return The bar graph series that is currently loaded in this class,
+     *          could be null if nothing has previously been loaded
+     */
     public BarGraphSeries<DataPoint> getOverallBarGraphDataPoints() {
         return mOverallBarGraphPoints;
     }
 
+    /**
+     * Refreshes the data points given a question
+     * @param question The question that you want the data points to display
+     */
     public void refreshOverallBarGraphDataPoints(Question question) {
         try {
             DataPoint[] dataPoints = new DataPoint[(int)question.getNumChoices()];
 
             int i = 0;
             for(Map<String, Integer> map: mResponseCount) {
-                dataPoints[i] = new DataPoint(i , map.get(question.getChoices().get(i).getChoiceId()));
+                dataPoints[i] = new DataPoint(i , map.get(question.getChoices()
+                        .get(i).getChoiceId()));
                 i++;
             }
 
             BarGraphSeries<DataPoint> barGraphDataPoints = new BarGraphSeries<>(dataPoints);
             if (mResponseCount.size() < question.getNumChoices()) {
-                Log.d("TEST", "Size: " + mResponseCount.size() + ", Num Choices in Question" + question.getNumChoices());
+                Log.d("TEST", "Size: " + mResponseCount.size() + ", Num Choices in Question"
+                        + question.getNumChoices());
             } else {
                 mOverallBarGraphPoints = barGraphDataPoints;
             }
             mOverallBarGraphPoints = barGraphDataPoints;
         } catch (NullPointerException e){
-            Log.d("NULL", "null pointer exception in database reader, refreshOverallBarGraphDataPoints");
+            Log.d("NULL",
+                    "null pointer exception in database reader, refreshOverallBarGraphDataPoints");
         }
 
     }
 
+    /**
+     * Gets the currently stored choiceInstanceId
+     * @return The choiceInstanceId that is stored in this class, could be null if nothing has been
+     *          loaded into the class
+     */
     public String getChoiceInstanceId() {
         return mChoiceInstanceId;
-    }
-
-    public void clearAllReadData() {
-        mUser = null;
-        mQuestion = null;
-        mChoiceInstanceId = null;
-        mOverallBarGraphPoints = null;
-        mResponseCount = null;
-        mAnswerCount = 0;
     }
 
     /**

@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -16,9 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.coderafe.opinionated.R;
-import com.coderafe.opinionated.adapters.QuestionAdapter;
 import com.coderafe.opinionated.db.DatabaseReader;
-import com.coderafe.opinionated.model.Question;
 import com.coderafe.opinionated.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -106,7 +103,7 @@ public class HomeActivity extends AppCompatActivity {
 
     /**
      * Inflates the menu on the action bar from a layout
-     * @param menu
+     * @param menu A reference to the menu
      * @return Whether the options menu was created successfully
      */
     @Override
@@ -118,7 +115,7 @@ public class HomeActivity extends AppCompatActivity {
 
     /**
      * Handles any of the options that are selected on the action menu
-     * @param menuItem
+     * @param menuItem A reference to the menu item
      * @return Whether the menu option was handled correctly
      */
     @Override
@@ -161,7 +158,7 @@ public class HomeActivity extends AppCompatActivity {
          * While the database reader is attempting to read the user data, this waits until it has
          * been loaded before updating any of the UI elements related to the user
          * @param voids
-         * @return
+         * @return The user that have been loaded from the database reader
          */
         @Override
         public User doInBackground(Void... voids) {
@@ -232,12 +229,6 @@ public class HomeActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mDatabaseReader = null;
     }
 
 }

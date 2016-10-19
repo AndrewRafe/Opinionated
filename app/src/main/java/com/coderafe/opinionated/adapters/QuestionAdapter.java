@@ -12,7 +12,6 @@ import com.coderafe.opinionated.R;
 import com.coderafe.opinionated.activities.AnswerQuestionActivity;
 import com.coderafe.opinionated.activities.DataExplorationActivity;
 import com.coderafe.opinionated.activities.HomeActivity;
-import com.coderafe.opinionated.activities.QuestionListActivity;
 import com.coderafe.opinionated.model.Question;
 
 import java.util.LinkedList;
@@ -59,7 +58,8 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
-        View view = LayoutInflater.from(mContext).inflate(R.layout.question_list_item, parent, false);
+        View view = LayoutInflater.from(mContext)
+                .inflate(R.layout.question_list_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }

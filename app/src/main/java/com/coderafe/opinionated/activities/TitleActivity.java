@@ -9,12 +9,20 @@ import com.coderafe.opinionated.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * The main activity on start-up. Will allow the user to either sign in or
+ * create a new user
+ */
 public class TitleActivity extends AppCompatActivity {
 
     //Firebase Variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
 
+    /**
+     * Sets up firebase database authority
+     * @param savedInstanceState Reference to the bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,10 +30,6 @@ public class TitleActivity extends AppCompatActivity {
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-
-        if (mFirebaseUser == null) {
-            //Not logged in so go to login
-        }
     }
 
     /**

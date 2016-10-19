@@ -1,13 +1,7 @@
 package com.coderafe.opinionated.db;
 
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.coderafe.opinionated.model.Answer;
-import com.coderafe.opinionated.model.Choice;
-import com.coderafe.opinionated.model.ChoiceInstance;
-import com.coderafe.opinionated.model.Question;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,13 +11,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 /**
  * Class to write information to the firebase database
@@ -34,24 +25,25 @@ public class DatabaseWriter {
     private final String USER_ID_CHILD="userId";
     private final String CHOICE_INSTANCE_ID="choiceInstance";
     private final String QUESTIONS_ANSWERED_CHILD="questionsAnswered";
-    private final String CHOICE_INSTANCE_TABLE="choiceInstances";
-    private final String QUESTION_ID_CHILD="questionId";
-    private final String CHOICE_ID_CHILD="choiceId";
     private final String USER_TABLE="users";
-
-    private final String CHOICE_INSTANCE_ID_FIND_TAG="CHOICE_INSTANCE_FIND";
 
     private DatabaseReference mDatabase;
     private FirebaseUser mFirebaseUser;
 
 
+    /**
+     * Sets up a reference to the database with the authority
+     * @param firebaseUser The user that will access the database
+     */
     public DatabaseWriter(FirebaseUser firebaseUser) {
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
     }
 
+    /**
+     * Adds a choice instance to the answer table
+     * @param choiceInstanceId the choice instance to be added
+     */
     public void submitAnswer(String choiceInstanceId) {
 
         Map<String, String> post = new HashMap<String,String>();
@@ -66,7 +58,13 @@ public class DatabaseWriter {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 String userId = mFirebaseUser.getUid();
-                mDatabase.child(USER_TABLE).child(userId).child(QUESTIONS_ANSWERED_CHILD).runTransaction(new Transaction.Handler() {
+                mDatabase.child(USER_TABLE).child(userId).child(QUESTIONS_ANSWERED_CHILD)
+                        .runTransaction(new Transaction.Handler() {
+                    /**
+                     * Increases the number of questions that the user has answered
+                      * @param mutableData The transaction data
+                     * @return The result of the transaction
+                     */
                     @Override
                     public Transaction.Result doTransaction(MutableData mutableData) {
                         mutableData.setValue((long) mutableData.getValue() + 1);
@@ -74,7 +72,8 @@ public class DatabaseWriter {
                     }
 
                     @Override
-                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                    public void onComplete(DatabaseError databaseError,
+                                           boolean b, DataSnapshot dataSnapshot) {
 
                     }
                 });

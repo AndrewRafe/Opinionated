@@ -1,19 +1,16 @@
 package com.coderafe.opinionated.activities;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.VectorEnabledTintResources;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.coderafe.opinionated.R;
-import com.coderafe.opinionated.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -22,7 +19,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-
+/**
+ * Activity to create a new user and add that user to the database
+ */
 public class CreateUserActivity extends AppCompatActivity {
 
     public final String USER_TABLE = "users";
@@ -43,6 +42,10 @@ public class CreateUserActivity extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private DatabaseReference mDatabase;
 
+    /**
+     * Sets up the references to the multiple views in the activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +76,7 @@ public class CreateUserActivity extends AppCompatActivity {
         String postcode = mUserPassword.getText().toString().trim();
         String gender = mGender.getText().toString().trim();
 
+        //Basic user data entering restrictions
         if (email.isEmpty() || password.isEmpty() || yearOfBirth.isEmpty() ||
                 postcode.isEmpty() || gender.isEmpty()) {
             showAlert(getString(R.string.create_user_alert_title),
@@ -98,7 +102,8 @@ public class CreateUserActivity extends AppCompatActivity {
                                 .setValue(mPostcode.getText().toString());
                         mDatabase.child(USER_TABLE).child(userId).child(GENDER)
                                 .setValue(mGender.getText().toString());
-                        mDatabase.child(USER_TABLE).child(userId).child(NUMBER_OF_QUESTIONS_ANSWERED)
+                        mDatabase.child(USER_TABLE).child(userId)
+                                .child(NUMBER_OF_QUESTIONS_ANSWERED)
                                 .setValue(0);
                         //Launch the home activity while closing this activity
                         Intent intent = new Intent(CreateUserActivity.this, HomeActivity.class);
@@ -106,6 +111,7 @@ public class CreateUserActivity extends AppCompatActivity {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     } else {
+                        //Alert if the creating of the new user fails
                         showAlert(getString(R.string.create_user_alert_title),
                                 task.getException().getMessage(),
                                 getString(R.string.log_in_alert_button_text));
@@ -120,9 +126,9 @@ public class CreateUserActivity extends AppCompatActivity {
 
     /**
      * A helper method that creates and displays an alert dialog
-     * @param title
-     * @param message
-     * @param okButtonText
+     * @param title The title of the alert
+     * @param message The message of the alert
+     * @param okButtonText The text on the button of the alert dialog
      */
     private void showAlert(String title, String message, String okButtonText) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(CreateUserActivity.this);

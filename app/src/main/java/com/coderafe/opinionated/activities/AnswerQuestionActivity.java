@@ -5,8 +5,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +15,6 @@ import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.coderafe.opinionated.R;
 import com.coderafe.opinionated.db.DatabaseReader;
@@ -25,15 +22,15 @@ import com.coderafe.opinionated.db.DatabaseWriter;
 import com.coderafe.opinionated.model.Choice;
 import com.coderafe.opinionated.model.Question;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import org.w3c.dom.Text;
-
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
+/**
+ * The Activity that allows the user to answer a selected question.
+ * Will create the views depending on the question that the user
+ * is going to answer
+ */
 public class AnswerQuestionActivity extends AppCompatActivity {
 
     private final String ASYNC_TASK_TAG = "ASYNC";
@@ -50,6 +47,12 @@ public class AnswerQuestionActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private GridLayout mGridLayout;
 
+    /**
+     * Sets up the answer question activity by establishing read and write connection
+     * to the firebase database. Also starts the loading process of the question and
+     * the choices for the question
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +68,11 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         new DownloadRandomQuestion().execute();
     }
 
+    /**
+     * Inflates the answer question menu
+     * @param menu
+     * @return True if the options menu was inflated correctly
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -97,8 +105,16 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(menuItem);
     }
 
+    /**
+     * Async Task to wait for the question that is currently loading in the database reader
+     */
     private class DownloadRandomQuestion extends AsyncTask<Void, Void, Question> {
 
+        /**
+         * Waits for the question currently being loaded in the database reader
+         * @param voids
+         * @return The question that the database reader has completed downloading
+         */
         @Override
         public Question doInBackground(Void... voids) {
             Question question = mDatabaseReader.getFirstQuestion();
@@ -108,6 +124,10 @@ public class AnswerQuestionActivity extends AppCompatActivity {
             return question;
         }
 
+        /**
+         * Displays the question information to the UI and makes the progress bar invisible
+         * @param question The question that was loaded in the database reader
+         */
         @Override
         public void onPostExecute(Question question) {
             mQuestion = question;
@@ -118,11 +138,18 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Creates a read and a write connection to the firebase database
+     */
     private void establishReadAndWriteConnection() {
         mDatabaseReader = new DatabaseReader(FirebaseAuth.getInstance().getCurrentUser());
         mDatabaseWriter = new DatabaseWriter(FirebaseAuth.getInstance().getCurrentUser());
     }
 
+    /**
+     * Generates the grid layout to correctly display the choices to the questions
+     * and sets each of the grids to an appropriate on click listener
+     */
     private void generateChoiceGridLayout() {
         final LinkedList<Choice> choices = mQuestion.getChoices();
 
@@ -174,24 +201,44 @@ public class AnswerQuestionActivity extends AppCompatActivity {
 
     /**
      * On Click Listener class that takes a choice and a question as parameters
+     * Will store the answer of the question on the database
      */
     private class OnClickSubmitAnswer implements View.OnClickListener {
 
         private Question mQuestion;
         private Choice mChoice;
 
+        /**
+         * Constructor that takes the question and the choice that the user selected
+         * @param question The question that the user answered
+         * @param choice The choice that the user selected
+         */
         public OnClickSubmitAnswer(Question question, Choice choice) {
             this.mQuestion = question;
             this.mChoice = choice;
             Log.d(ON_CLICK_TAG, "" + this.mChoice);
         }
 
+        /**
+         * Initiates the async task to find the specific choiceInstanceId that the user
+         * has selected
+         * @param view
+         */
         @Override
         public void onClick(View view) {
             new FindChoiceInstanceId().execute();
         }
 
+        /**
+         * Async class that finds the choiceInstanceId and waits for the database reader
+         * to return it
+         */
         private class FindChoiceInstanceId extends AsyncTask<Void, Void, String> {
+            /**
+             * Waits for the database reader to find the choiceInstanceId
+             * @param voids
+             * @return The choiceInstanceId represented as a string
+             */
             @Override
             protected String doInBackground(Void... voids) {
                 mDatabaseReader.findChoiceInstanceId(mQuestion, mChoice);
@@ -199,6 +246,10 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                 return mDatabaseReader.getChoiceInstanceId();
             }
 
+            /**
+             * Writes the selected choiceInstance to the database and sends the user back home
+             * @param s The choiceInstanceId that was found in the doInBackground method
+             */
             @Override
             protected void onPostExecute(String s) {
                 mDatabaseWriter.submitAnswer(s);

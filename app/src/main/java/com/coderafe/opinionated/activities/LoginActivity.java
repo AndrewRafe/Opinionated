@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,9 +17,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-import static android.view.View.GONE;
-
+/**
+ * An activity that allows a user to log in to the firebase database
+ */
 public class LoginActivity extends AppCompatActivity {
+
+    private final String NULL_TAG = "NULL";
 
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
@@ -27,6 +31,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mFirebaseAuth;
 
+    /**
+     * Sets up the references to all the views in this activity
+     * @param savedInstanceState Reference to the bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         /**
                          * Runs on completion of the sign in authentication
-                         * @param task
+                         * @param task A reference to the task
                          */
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -79,11 +87,16 @@ public class LoginActivity extends AppCompatActivity {
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                             } else {
-                                showAlert(getString(R.string.log_in_alert_title),
-                                        task.getException().getMessage(),
-                                        getString(R.string.log_in_alert_button_text));
-                                mSubmitButton.setVisibility(View.VISIBLE);
-                                mProgressBar.setVisibility(View.GONE);
+                                try {
+                                    showAlert(getString(R.string.log_in_alert_title),
+                                            task.getException().getMessage(),
+                                            getString(R.string.log_in_alert_button_text));
+                                    mSubmitButton.setVisibility(View.VISIBLE);
+                                    mProgressBar.setVisibility(View.GONE);
+                                } catch (NullPointerException e) {
+                                    Log.d(NULL_TAG, "The exception message is null");
+                                }
+
                             }
                         }
                     });
@@ -92,9 +105,9 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * A helper method that creates and displays an alert dialog
-     * @param title
-     * @param message
-     * @param okButtonText
+     * @param title The title of the alert
+     * @param message The message of the alert
+     * @param okButtonText The text on the button of the alert
      */
     private void showAlert(String title, String message, String okButtonText) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(LoginActivity.this);

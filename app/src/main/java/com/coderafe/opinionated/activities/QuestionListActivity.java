@@ -1,6 +1,5 @@
 package com.coderafe.opinionated.activities;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,10 +12,12 @@ import com.coderafe.opinionated.adapters.QuestionAdapter;
 import com.coderafe.opinionated.db.DatabaseReader;
 import com.coderafe.opinionated.model.Question;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.LinkedList;
 
+/**
+ * An activity that displays a list of all the currently active questions in the database
+ */
 public class QuestionListActivity extends AppCompatActivity {
 
     private final String LOAD_DATA_TAG="LOAD_DATA_LIST";
@@ -27,6 +28,11 @@ public class QuestionListActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
     private DatabaseReader mDatabaseReader;
 
+    /**
+     * Sets up the references to all the views in the activity as well as setting up the
+     * recycler view. It also starts loading all of the questions through an async task
+     * @param savedInstanceState Reference to the bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +50,8 @@ public class QuestionListActivity extends AppCompatActivity {
         mQuestionListRecyclerView.setLayoutManager(mRecyclerViewLayoutManager);
         mRecyclerViewAdapter = new QuestionAdapter(this, new LinkedList<Question>(),
                 getIntent().getStringExtra(HomeActivity.LIST_PURPOSE));
-        Log.d(INTENTS_TAG, "The list purpose is: " + getIntent().getStringExtra(HomeActivity.LIST_PURPOSE));
+        Log.d(INTENTS_TAG, "The list purpose is: " + getIntent()
+                .getStringExtra(HomeActivity.LIST_PURPOSE));
         mQuestionListRecyclerView.setAdapter(mRecyclerViewAdapter);
         new LoadAllQuestions().execute();
     }
@@ -55,11 +62,20 @@ public class QuestionListActivity extends AppCompatActivity {
      */
     private class LoadAllQuestions extends AsyncTask<Void, Question, LinkedList<Question>> {
 
+        /**
+         * Gets the database reader to begin to load all of the questions
+         */
         @Override
         protected void onPreExecute() {
             mDatabaseReader.loadAllQuestions();
         }
 
+        /**
+         * Will continue downloading questions until all the questions have been loaded
+         * As each question is loaded it is sent to the progressUpdate method
+         * @param voids Params of async task
+         * @return A list of all of the questions
+         */
         @Override
         protected LinkedList<Question> doInBackground(Void... voids) {
             while(!mDatabaseReader.getIsAllQuestionIdsLoaded()) {
@@ -97,6 +113,10 @@ public class QuestionListActivity extends AppCompatActivity {
             mRecyclerViewAdapter.notifyDataSetChanged();
         }
 
+        /**
+         * Will notify debug that all questions have been downloaded
+         * @param allQuestions A list of all of the questions in the database
+         */
         @Override
         protected void onPostExecute(LinkedList<Question> allQuestions) {
             Log.d(LOAD_DATA_TAG, "All questions loaded");

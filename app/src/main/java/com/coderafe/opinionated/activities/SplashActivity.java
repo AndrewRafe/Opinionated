@@ -6,8 +6,15 @@ import android.os.Bundle;
 
 import com.coderafe.opinionated.R;
 
+/**
+ * Splash screen activity
+ */
 public class SplashActivity extends AppCompatActivity {
 
+    /**
+     * Sets up predifined splash screen layout and instantly starts title activity
+     * @param savedInstanceState Reference to the bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

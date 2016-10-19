@@ -16,21 +16,20 @@ import com.coderafe.opinionated.db.DatabaseReader;
 import com.coderafe.opinionated.model.Choice;
 import com.coderafe.opinionated.model.Question;
 import com.google.firebase.auth.FirebaseAuth;
-import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.LabelFormatter;
 import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 
-import org.junit.experimental.theories.DataPoints;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
 
+/**
+ * Activity that graphs all users answers to the questions
+ */
 public class DataExplorationActivity extends AppCompatActivity {
 
     private final String NULL_ERROR_TAG = "NULL";
@@ -46,6 +45,10 @@ public class DataExplorationActivity extends AppCompatActivity {
 
     private static Timer sTimer;
 
+    /**
+     * Sets up references to all the views in the data exploration activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +57,10 @@ public class DataExplorationActivity extends AppCompatActivity {
         mTitleTextView = (TextView) findViewById(R.id.data_exploration_title_tv);
     }
 
+    /**
+     * OnStart method that establishes a read connection to the database as well as
+     * setting up a timer tick that will refresh the graph at a specified time interval
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -74,7 +81,7 @@ public class DataExplorationActivity extends AppCompatActivity {
     }
 
     /**
-     * Stops the timer when the activity stops
+     * OnStop method that stops the timer when the activity stops
      */
     @Override
     protected void onStop() {
@@ -82,6 +89,11 @@ public class DataExplorationActivity extends AppCompatActivity {
         sTimer.cancel();
     }
 
+    /**
+     * Inflates the menu for the data exploration activity
+     * @param menu A reference to the meny
+     * @return True if the menu was inflated correctly
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -91,7 +103,7 @@ public class DataExplorationActivity extends AppCompatActivity {
 
     /**
      * Handles any of the options that are selected on the action menu
-     * @param menuItem
+     * @param menuItem A reference to a menu item
      * @return Whether the menu option was handled correctly
      */
     @Override
@@ -115,18 +127,32 @@ public class DataExplorationActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(menuItem);
     }
 
-
-
+    /**
+     * The initial display of the bar graph at the conclusion of the loading of the question
+     * from the database reader
+     * @param question The question that was loaded from the database reader
+     */
     private void showBarGraph(Question question) {
         mGraph.setVisibility(View.VISIBLE);
         graphSetUp(question);
         mDatabaseReader.loadOverallBarGraphResults(question);
         Log.d("BAR_GRAPH", "loading bar graph results");
+        //Loads the results of the question
         new LoadOverallBarGraphPoints().execute(question);
     }
 
-    private class LoadOverallBarGraphPoints extends AsyncTask<Question, Void, BarGraphSeries<DataPoint>> {
+    /**
+     * Async class that loads all of the data-points into the member variable storing the
+     * database points
+     */
+    private class LoadOverallBarGraphPoints extends
+            AsyncTask<Question, Void, BarGraphSeries<DataPoint>> {
 
+        /**
+         * Constantly retrieves the loaded data points for display in the graph view
+         * @param params
+         * @return
+         */
         @Override
         protected BarGraphSeries<DataPoint> doInBackground(Question... params) {
             while(true) {
@@ -134,6 +160,10 @@ public class DataExplorationActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * If it breaks out of the async task
+         * @param dataPointBarGraphSeries
+         */
         @Override
         protected void onPostExecute(BarGraphSeries<DataPoint> dataPointBarGraphSeries) {
             super.onPostExecute(dataPointBarGraphSeries);
@@ -142,6 +172,10 @@ public class DataExplorationActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up the conditions of the graph view
+     * @param question The question that the graph view is going to display
+     */
     private void graphSetUp(Question question) {
         String[] choiceText = new String[(int)question.getNumChoices()];
         StaticLabelsFormatter labelsFormatter = new StaticLabelsFormatter(mGraph);
@@ -159,6 +193,9 @@ public class DataExplorationActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Will draw the graph according to the current graph data points
+     */
     private void drawGraph() {
         try {
             mGraph.removeAllSeries();
@@ -168,7 +205,8 @@ public class DataExplorationActivity extends AppCompatActivity {
             mBarGraphDataPoints.setValueDependentColor(new ValueDependentColor<DataPoint>() {
                 @Override
                 public int get(DataPoint data) {
-                    return Color.rgb((int) data.getX()*255/4, (int) Math.abs(data.getY()*255/6), 100);
+                    return Color.rgb((int) data.getX()*255/4,
+                            (int) Math.abs(data.getY()*255/6), 100);
                 }
             });
 
@@ -192,11 +230,18 @@ public class DataExplorationActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Will establish a read connection to the firebase database and store the refrence
+     * to the database reader
+     */
     private void establishReadConnection() {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mDatabaseReader = new DatabaseReader(firebaseAuth.getCurrentUser());
     }
 
+    /**
+     * Will download the question of the currently loaded question in the database reader
+     */
     private class DownloadRandomQuestion extends AsyncTask<Void, Void, Question> {
 
         @Override
