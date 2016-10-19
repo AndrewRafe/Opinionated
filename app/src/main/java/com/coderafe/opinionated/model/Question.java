@@ -29,6 +29,20 @@ public class Question {
     }
 
     /**
+     * Aleternate constructor method for creating a question with an already filled allCHoices list
+     * @param questionId
+     * @param question
+     * @param numChoices
+     * @param allChoices
+     */
+    public Question(String questionId, String question, long numChoices, LinkedList<Choice> allChoices) {
+        mId = questionId;
+        mQuestion = question;
+        mNumChoices = numChoices;
+        mChoices = allChoices;
+    }
+
+    /**
      * Getter method to return the id number of the question
      * @return questionID
      */

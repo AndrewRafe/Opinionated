@@ -1,6 +1,7 @@
 package com.coderafe.opinionated.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
@@ -27,6 +28,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class AnswerQuestionActivity extends AppCompatActivity {
 
@@ -52,7 +54,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         mGridLayout = (GridLayout) findViewById(R.id.answer_question_grid_layout);
 
         establishReadAndWriteConnection();
-        mDatabaseReader.loadFirstQuestion();
+        mDatabaseReader.loadQuestion(getIntent().getStringExtra("questionId"));
         mProgressBar.setVisibility(View.VISIBLE);
         new DownloadRandomQuestion().execute();
     }
@@ -102,6 +104,7 @@ public class AnswerQuestionActivity extends AppCompatActivity {
         mGridLayout.setColumnCount(column);
         mGridLayout.setRowCount(row);
         TextView choiceText;
+        Random random = new Random();
         //Loop through all the grid squares in the grid layout and fill them with the choices
         for (int i = 0, c = 0, r = 0; i < choices.size(); i++, c++) {
             //If the column number is equal to its width then increment row and set column to zero
@@ -110,7 +113,10 @@ public class AnswerQuestionActivity extends AppCompatActivity {
                 r++;
             }
             choiceText = new TextView(this);
+            choiceText.setGravity(Gravity.CENTER);
             choiceText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            choiceText.setBackgroundColor(Color.rgb(random.nextInt()%256, random.nextInt()%256, random.nextInt()%256));
+            choiceText.setBackgroundResource(R.drawable.click_ripple);
             Log.d(UI_GENERATION, choices.get(i).getChoiceText());
             choiceText.setText(choices.get(i).getChoiceText());
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();

@@ -16,9 +16,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.coderafe.opinionated.R;
+import com.coderafe.opinionated.adapters.QuestionAdapter;
 import com.coderafe.opinionated.db.DatabaseReader;
+import com.coderafe.opinionated.model.Question;
 import com.coderafe.opinionated.model.User;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.LinkedList;
 
 /**
  * The home activity is the screen that the user will be on when they login or re-enter the app
@@ -26,6 +30,10 @@ import com.google.firebase.auth.FirebaseAuth;
  * results
  */
 public class HomeActivity extends AppCompatActivity {
+
+    public static final String LIST_PURPOSE = "listPurpose";
+    public static final String ANSWER_QUESTION_PURPOSE = "answer";
+    public static final String EXPLORE_DATA_PURPOSE = "explore";
 
     private DatabaseReader mDatabaseReader;
     private User mUser;
@@ -66,7 +74,8 @@ public class HomeActivity extends AppCompatActivity {
         mExploreResultsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, DataExplorationActivity.class);
+                Intent intent = new Intent(HomeActivity.this, QuestionListActivity.class);
+                intent.putExtra(LIST_PURPOSE, EXPLORE_DATA_PURPOSE);
                 startActivity(intent);
             }
         });
@@ -76,7 +85,8 @@ public class HomeActivity extends AppCompatActivity {
         mAnswerMoreQuestionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, AnswerQuestionActivity.class);
+                Intent intent = new Intent(HomeActivity.this, QuestionListActivity.class);
+                intent.putExtra(LIST_PURPOSE, ANSWER_QUESTION_PURPOSE);
                 startActivity(intent);
             }
         });
@@ -88,8 +98,8 @@ public class HomeActivity extends AppCompatActivity {
      * Refreshes the UI elements in the activity when the activity is resumed
      */
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         refreshPage();
     }
 
@@ -221,6 +231,5 @@ public class HomeActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
-
 
 }

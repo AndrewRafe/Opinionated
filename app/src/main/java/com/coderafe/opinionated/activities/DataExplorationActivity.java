@@ -31,6 +31,7 @@ public class DataExplorationActivity extends AppCompatActivity {
 
     private final String NULL_ERROR_TAG = "NULL";
     private final String BAR_GRAPH = "BAR_GRAPH";
+    private final String QUESTION_TAG = "QUESTION";
     private final int REFRESH_TIME = 5000;
 
     private DatabaseReader mDatabaseReader;
@@ -47,7 +48,9 @@ public class DataExplorationActivity extends AppCompatActivity {
         mGraph = (GraphView) findViewById(R.id.data_exploration_graph_view);
         mGraph.setVisibility(View.GONE);
         establishReadConnection();
-        mDatabaseReader.loadFirstQuestion();
+        String questionId = getIntent().getStringExtra("questionId");
+        Log.d(QUESTION_TAG, "Question id " + questionId);
+        mDatabaseReader.loadQuestion(questionId);
         new DownloadRandomQuestion().execute();
         mTimer = new Timer();
         mTimer.scheduleAtFixedRate(new TimerTask() {
@@ -150,6 +153,10 @@ public class DataExplorationActivity extends AppCompatActivity {
                 question = mDatabaseReader.getFirstQuestion();
             }
             mQuestion = question;
+            if (question.getNumChoices() == question.getChoices().size()) {
+                Log.d(QUESTION_TAG, "Question loaded has correct number of choices");
+            }
+            Log.d(QUESTION_TAG, "Question Loaded " + question.toString());
             return question;
         }
 
