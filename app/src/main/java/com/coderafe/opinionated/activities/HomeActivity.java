@@ -35,6 +35,8 @@ public class HomeActivity extends AppCompatActivity {
     public static final String ANSWER_QUESTION_PURPOSE = "answer";
     public static final String EXPLORE_DATA_PURPOSE = "explore";
 
+    public final String LIFECYCLE_TAG="LIFECYCLE";
+
     private DatabaseReader mDatabaseReader;
     private User mUser;
 
@@ -60,7 +62,6 @@ public class HomeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        establishReadConnection();
         //mUser = mDatabaseReader.getUser();
 
         mWelcomeTextView = (TextView) findViewById(R.id.home_welcome_tv);
@@ -80,8 +81,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        new LoadUserData().execute();
-
         mAnswerMoreQuestionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,6 +99,8 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(LIFECYCLE_TAG, "onStart");
+        establishReadConnection();
         refreshPage();
     }
 
@@ -128,6 +129,8 @@ public class HomeActivity extends AppCompatActivity {
             refreshPage();
         } else if (id == R.id.home_menu_logout) {
             logout();
+        } else if (id == R.id.home_menu_go_home) {
+            refreshPage();
         }
         return super.onOptionsItemSelected(menuItem);
     }
@@ -216,7 +219,6 @@ public class HomeActivity extends AppCompatActivity {
      * On click method that refreshes the information on the page
      */
     public void refreshPage() {
-        mDatabaseReader.clearAllReadData();
         mDatabaseReader.loadUser();
         new LoadUserData().execute();
     }
@@ -230,6 +232,12 @@ public class HomeActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mDatabaseReader = null;
     }
 
 }

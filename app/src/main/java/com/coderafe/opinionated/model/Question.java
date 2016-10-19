@@ -1,5 +1,6 @@
 package com.coderafe.opinionated.model;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -14,17 +15,19 @@ public class Question {
     private long mNumChoices;
     private LinkedList<Choice> mChoices;
     private boolean mIsAllChoicesLoaded;
+    private String mExtraInformationLink;
 
     /**
      * Constructor method for the Question class that will set the question and all of the options
      * @param questionId An associated id from a database
      * @param question A question as a String
      */
-    public Question(String questionId, String question, long numChoices) {
+    public Question(String questionId, String question, long numChoices, String extraInformationLink) {
         mId = questionId;
         mQuestion = question;
         mNumChoices = numChoices;
         mChoices = new LinkedList<Choice>();
+        mExtraInformationLink = extraInformationLink;
         mIsAllChoicesLoaded = false;
     }
 
@@ -81,5 +84,9 @@ public class Question {
 
     public String toString() {
         return mId + " " + mQuestion + " " + mNumChoices;
+    }
+
+    public String getExtraInformationLink() {
+        return mExtraInformationLink;
     }
 }

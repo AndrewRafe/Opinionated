@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -44,6 +45,7 @@ public class DatabaseReader {
     private final String QUESTION_TEXT_CHILD="questionText";
     private final String QUESTION_ID_CHILD="questionId";
     private final String NUM_CHOICES_CHILD="numChoices";
+    private final String QUESTION_LINK_CHILD="infoUrl";
     private final String CHOICE_ID_CHILD="choiceId";
     private final String CHOICE_INSTANCE_TABLE="choiceInstances";
     private final String CHOICE_TABLE="choices";
@@ -83,7 +85,6 @@ public class DatabaseReader {
         mAllQuestions = new LinkedList<>();
         mNumQuestions = 0;
         mAllQuestionIds = new LinkedList<>();
-        loadUser();
 
     }
 
@@ -139,7 +140,9 @@ public class DatabaseReader {
                             .child(QUESTION_TEXT_CHILD).getValue();
                     long numChoices = (long) dataSnapshot.child(givenQuestionId)
                             .child(NUM_CHOICES_CHILD).getValue();
-                    mQuestion = new Question(givenQuestionId, questionText, numChoices);
+                    String extraInfoLink = dataSnapshot.child(givenQuestionId)
+                            .child(QUESTION_LINK_CHILD).getValue().toString();
+                    mQuestion = new Question(givenQuestionId, questionText, numChoices, extraInfoLink);
                 } catch (NullPointerException e) {
                     Log.d(LOAD_DATA_ERROR_TAG, "The question id parsed to loadQuestion is null");
                     throw e;

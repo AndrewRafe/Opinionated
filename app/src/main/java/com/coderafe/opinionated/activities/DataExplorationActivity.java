@@ -1,11 +1,15 @@
 package com.coderafe.opinionated.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.coderafe.opinionated.R;
 import com.coderafe.opinionated.db.DatabaseReader;
@@ -32,28 +36,34 @@ public class DataExplorationActivity extends AppCompatActivity {
     private final String NULL_ERROR_TAG = "NULL";
     private final String BAR_GRAPH = "BAR_GRAPH";
     private final String QUESTION_TAG = "QUESTION";
-    private final int REFRESH_TIME = 5000;
+    private final int REFRESH_TIME = 1000;
 
     private DatabaseReader mDatabaseReader;
     private BarGraphSeries<DataPoint> mBarGraphDataPoints;
     private GraphView mGraph;
     private Question mQuestion;
+    private TextView mTitleTextView;
 
-    private Timer mTimer;
+    private static Timer sTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_exploration);
         mGraph = (GraphView) findViewById(R.id.data_exploration_graph_view);
-        mGraph.setVisibility(View.GONE);
+        mTitleTextView = (TextView) findViewById(R.id.data_exploration_title_tv);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         establishReadConnection();
         String questionId = getIntent().getStringExtra("questionId");
         Log.d(QUESTION_TAG, "Question id " + questionId);
         mDatabaseReader.loadQuestion(questionId);
         new DownloadRandomQuestion().execute();
-        mTimer = new Timer();
-        mTimer.scheduleAtFixedRate(new TimerTask() {
+        sTimer = new Timer();
+        sTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 mDatabaseReader.refreshOverallBarGraphDataPoints(mQuestion);
@@ -61,15 +71,51 @@ public class DataExplorationActivity extends AppCompatActivity {
                 drawGraph();
             }
         }, 0, REFRESH_TIME);
-        //TODO: CHOOSE QUESTION ANOTHER WAY
-
     }
 
+    /**
+     * Stops the timer when the activity stops
+     */
     @Override
     protected void onStop() {
         super.onStop();
-        mTimer.cancel();
+        sTimer.cancel();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.home_menu, menu);
+        return true;
+    }
+
+    /**
+     * Handles any of the options that are selected on the action menu
+     * @param menuItem
+     * @return Whether the menu option was handled correctly
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        int id = menuItem.getItemId();
+
+        if (id == R.id.home_menu_refresh) {
+            establishReadConnection();
+            String questionId = getIntent().getStringExtra("questionId");
+            Log.d(QUESTION_TAG, "Question id " + questionId);
+            mDatabaseReader.loadQuestion(questionId);
+            new DownloadRandomQuestion().execute();
+        } else if (id == R.id.home_menu_logout) {
+            establishReadConnection();
+        } else if (id == R.id.home_menu_go_home) {
+            Intent intent = new Intent(DataExplorationActivity.this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+
 
     private void showBarGraph(Question question) {
         mGraph.setVisibility(View.VISIBLE);
@@ -99,13 +145,17 @@ public class DataExplorationActivity extends AppCompatActivity {
     private void graphSetUp(Question question) {
         String[] choiceText = new String[(int)question.getNumChoices()];
         StaticLabelsFormatter labelsFormatter = new StaticLabelsFormatter(mGraph);
-
+        mTitleTextView.setText(question.getQuestion());
         int i = 0;
+        Log.d(QUESTION_TAG, "Number of Choices for question " + question.getChoices().size());
         for(Choice choice: question.getChoices()) {
             choiceText[i] = choice.getChoiceText();
+            Log.d(QUESTION_TAG, "adding choice " + choice.toString());
             i++;
         }
         labelsFormatter.setHorizontalLabels(choiceText);
+        mGraph.getGridLabelRenderer().setLabelFormatter(labelsFormatter);
+
 
     }
 
@@ -127,9 +177,12 @@ public class DataExplorationActivity extends AppCompatActivity {
             // draw values on top
             mBarGraphDataPoints.setDrawValuesOnTop(true);
             mBarGraphDataPoints.setValuesOnTopColor(Color.RED);
+
             Viewport viewport = mGraph.getViewport();
+            //Set the max height of the x axis to be a fifth lower than the highest bar
             viewport.setMinY(0);
-            viewport.setScalableY(true);
+            viewport.setMaxY(mBarGraphDataPoints.getHighestValueY()
+                    + mBarGraphDataPoints.getHighestValueY()/5);
             viewport.setYAxisBoundsManual(true);
 
         } catch (NullPointerException e) {

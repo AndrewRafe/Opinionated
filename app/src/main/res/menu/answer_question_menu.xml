@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.coderafe.opinionated.activities.AnswerQuestionActivity">
+
+    <item android:id="@+id/answer_question_extra_info"
+        android:title="@string/answer_question_menu_extra_info"
+        android:icon="@drawable/ic_action_extra_info"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/answer_question_go_home"
+        android:title="@string/home_menu_go_home"
+        android:icon="@drawable/ic_action_go_home"
+        app:showAsAction="always"/>
+</menu>
